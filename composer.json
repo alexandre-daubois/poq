@@ -1,0 +1,35 @@
+{
+    "name": "alexandre-daubois/poq",
+    "type": "library",
+    "description": "Provides an object-oriented API to query in-memory collections in a SQL-style.",
+    "keywords": ["query", "linq", "collection", "object"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexandre Daubois",
+            "email": "alex.daubois@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "symfony/property-access": "^6.1"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": { "ObjectQuery\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "scripts": {
+        "test": "./phpunit.phar"
+    }
+}
