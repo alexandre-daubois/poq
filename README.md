@@ -1,5 +1,20 @@
 # POQ - PHP Object Query
 
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg?style=flat-square)](https://php.net/)
+![CI](https://github.com/alexandre-daubois/poq/actions/workflows/php.yml/badge.svg)
+[![Latest Unstable Version](http://poser.pugx.org/alexandre-daubois/poq/v/unstable)](https://packagist.org/packages/alexandre-daubois/poq)
+[![License](http://poser.pugx.org/alexandre-daubois/poq/license)](https://packagist.org/packages/alexandre-daubois/poq)
+
+## Install
+
+```bash
+composer require alexandre-daubois/poq 1.0.0-beta
+```
+
+That's it, ready to go! 🎉
+
+## Usage
+
 Here is the set of data we're going to use in the follow examples:
 
 ```php
