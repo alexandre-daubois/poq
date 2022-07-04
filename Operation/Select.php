@@ -10,9 +10,9 @@
 namespace ObjectQuery\Operation;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Select extends AbstractOperation
+final class Select extends AbstractQueryOperation
 {
     public function __construct(ObjectQuery $parentQuery, array|string|null $fields = null)
     {
@@ -21,8 +21,8 @@ final class Select extends AbstractOperation
         $this->parentQuery = $parentQuery;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): iterable
     {
-        return $this->applySelect($source, $context);
+        return $this->applySelect($query);
     }
 }

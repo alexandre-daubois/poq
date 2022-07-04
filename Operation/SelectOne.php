@@ -11,9 +11,9 @@ namespace ObjectQuery\Operation;
 
 use ObjectQuery\Exception\NonUniqueResultException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class SelectOne extends AbstractOperation
+final class SelectOne extends AbstractQueryOperation
 {
     public function __construct(ObjectQuery $parentQuery, ?string $fields = null)
     {
@@ -22,9 +22,9 @@ final class SelectOne extends AbstractOperation
         $this->parentQuery = $parentQuery;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): mixed
+    public function apply(QueryInterface $query): mixed
     {
-        $result = $this->applySelect($source, $context);
+        $result = (array) $this->applySelect($query);
 
         $resultCount = \count($result);
         if ($resultCount > 1) {

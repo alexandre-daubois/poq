@@ -17,9 +17,9 @@ class OffsetTest extends AbstractQueryTest
 {
     public function testOffset(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->offset(1)
+        $query = ObjectQuery::from($this->cities);
+
+        $result = $query->offset(1)
             ->select();
 
         $this->assertCount(1, $result);
@@ -28,9 +28,9 @@ class OffsetTest extends AbstractQueryTest
 
     public function testNullOffset(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->offset(null)
+        $query = ObjectQuery::from($this->cities);
+
+        $result = $query->offset(null)
             ->select();
 
         $this->assertCount(\count($this->cities), $result);
@@ -38,12 +38,11 @@ class OffsetTest extends AbstractQueryTest
 
     public function testNegativeOffset(): void
     {
-        $query = new ObjectQuery();
+        $query = ObjectQuery::from($this->cities);
 
         $this->expectException(InvalidModifierConfigurationException::class);
         $this->expectExceptionMessage('The offset must be a positive integer or null to set no offset.');
-        $query->from($this->cities)
-            ->offset(-1)
+        $query->offset(-1)
             ->select();
     }
 }

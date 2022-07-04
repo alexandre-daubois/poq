@@ -16,9 +16,8 @@ class SelectTest extends AbstractQueryTest
 {
     public function testObjectsSelect(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->select('name');
+        $query = ObjectQuery::from($this->cities);
+        $result = $query->select('name');
 
         $this->assertSame('Lyon', $result[0]);
         $this->assertSame('Paris', $result[1]);
@@ -26,9 +25,8 @@ class SelectTest extends AbstractQueryTest
 
     public function testObjectsMultipleSelect(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->select(['name', 'minimalAge']);
+        $query = ObjectQuery::from($this->cities);
+        $result = $query->select(['name', 'minimalAge']);
 
         $this->assertSame('Lyon', $result[0]['name']);
         $this->assertSame(21, $result[0]['minimalAge']);

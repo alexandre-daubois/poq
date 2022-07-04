@@ -16,10 +16,9 @@ class EachTest extends AbstractQueryTest
 {
     public function testEach(): void
     {
-        $query = new ObjectQuery();
-        $query
-            ->from($this->cities)
-            ->selectMany('persons', 'p');
+        $query = ObjectQuery::from($this->cities);
+
+        $query->selectMany('persons', 'p');
 
         $result = $query
             ->each(fn($element) => $element->height * 2);

@@ -13,7 +13,7 @@ namespace ObjectQuery;
  * @author Alexandre Daubois <alex.daubois@gmail.com>
  * @author Hubert Lenoir <lenoir.hubert@gmail.com>
  */
-class ObjectQueryContext
+class ObjectQueryContext implements QueryContextInterface
 {
     public function __construct(
         /** @var \SplObjectStorage<array<string, object>> */
@@ -28,7 +28,7 @@ class ObjectQueryContext
         return $this->environments[$environment] ?? [];
     }
 
-    public function withEnvironment(object $environment, array $info): self
+    public function withEnvironment(object $environment, array $info): QueryContextInterface
     {
         $environments = clone($this->environments);
         $environments[$environment] = $info + $this->getEnvironment($environment);
@@ -41,7 +41,7 @@ class ObjectQueryContext
         return isset($this->usedAliases[$alias]);
     }
 
-    public function withUsedAlias(string $alias): self
+    public function withUsedAlias(string $alias): QueryContextInterface
     {
         return new self(clone($this->environments), $this->usedAliases + [$alias => true]);
     }

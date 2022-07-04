@@ -20,21 +20,16 @@ class QueryTest extends AbstractQueryTest
 {
     public function testSimpleAlias(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities, 'city')
+        $query = ObjectQuery::from($this->cities, 'city')
             ->selectMany('persons', 'person')
             ->where(fn($person, ObjectQueryContextEnvironment $context) => $context->get('city')->name === 'Lyon');
 
         $this->assertCount(2, $query->select());
     }
 
-    /**
-     * TODO
-     */
     public function testWrongAlias(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities, 'element')
+        $query = ObjectQuery::from($this->cities, 'element')
             ->selectMany('persons', 'person')
             ->where(fn($city, ObjectQueryContextEnvironment $context) => $context->get('city')->name === 'Lyon');
 
@@ -48,37 +43,28 @@ class QueryTest extends AbstractQueryTest
         $this->expectException(AliasAlreadyTakenInQueryContextException::class);
         $this->expectExceptionMessage('Alias "__" is already taken in the query. You should choose another name for your alias.');
 
-        $query = new ObjectQuery();
-        $query
-            ->from($this->cities, '__')
-            ->selectMany('persons', '__');
+        $query = ObjectQuery::from($this->cities, '__');
+        $query->selectMany('persons', '__');
     }
 
     public function testFromScalarCollection(): void
     {
-        $query = new ObjectQuery();
-
         $this->expectException(IncompatibleCollectionException::class);
         $this->expectExceptionMessage('The given collection is incompatible with "from" because of the following reason: Mixed and scalar collections are not supported. Collection must only contain objects to be used by ObjectQuery.');
-        $query
-            ->from(self::NUMBERS);
+        ObjectQuery::from(self::NUMBERS);
     }
 
     public function testFromMixedCollection(): void
     {
-        $query = new ObjectQuery();
-
         $this->expectException(IncompatibleCollectionException::class);
         $this->expectExceptionMessage('The given collection is incompatible with "from" because of the following reason: Mixed and scalar collections are not supported. Collection must only contain objects to be used by ObjectQuery.');
-        $query
-            ->from($this->cities + self::NUMBERS);
+        ObjectQuery::from($this->cities + self::NUMBERS);
     }
 
     public function testSelectOnInitialQueryWithSubQueries(): void
     {
-        $query = new ObjectQuery();
+        $query = ObjectQuery::from($this->cities);
         $query
-            ->from($this->cities)
             ->orderBy(ObjectQueryOrder::Ascending, 'name')
             ->limit(1)
         ;
@@ -99,9 +85,8 @@ class QueryTest extends AbstractQueryTest
 
     public function testSelectOnInitialQueryWithSubQueriesAndIntermediateWhere(): void
     {
-        $query = new ObjectQuery();
+        $query = ObjectQuery::from($this->cities);
         $query
-            ->from($this->cities)
             ->orderBy(ObjectQueryOrder::Ascending, 'name')
             ->limit(1)
         ;

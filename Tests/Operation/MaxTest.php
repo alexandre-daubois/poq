@@ -16,8 +16,7 @@ class MaxTest extends AbstractQueryTest
 {
     public function testMax(): void
     {
-        $query = (new ObjectQuery())
-            ->from($this->cities, 'city')
+        $query = (ObjectQuery::from($this->cities))
             ->selectMany('persons', 'person')
             ->selectMany('children', 'child');
 
@@ -26,8 +25,7 @@ class MaxTest extends AbstractQueryTest
 
     public function testMaxWithoutResult(): void
     {
-        $query = (new ObjectQuery())
-            ->from($this->cities, 'city')
+        $query = (ObjectQuery::from($this->cities))
             ->selectMany('persons', 'person')
             ->where(fn($person) => $person->height > 190)
             ->selectMany('children', 'child');

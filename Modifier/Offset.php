@@ -11,9 +11,9 @@ namespace ObjectQuery\Modifier;
 
 use ObjectQuery\Exception\InvalidModifierConfigurationException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Offset extends AbstractModifier
+final class Offset extends AbstractQueryModifier
 {
     private readonly ?int $offset;
 
@@ -24,16 +24,16 @@ final class Offset extends AbstractModifier
         $this->offset = $offset;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): iterable
     {
         if (null === $this->offset) {
-            return $source;
+            return $query->getSource();
         }
 
         if ($this->offset <= 0) {
             throw new InvalidModifierConfigurationException('offset', 'The offset must be a positive integer or null to set no offset.');
         }
 
-        return \array_slice($source, $this->offset);
+        return \array_slice((array) $query->getSource(), $this->offset);
     }
 }

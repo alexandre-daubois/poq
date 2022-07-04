@@ -17,8 +17,7 @@ class SumTest extends AbstractQueryTest
 {
     public function testSum(): void
     {
-        $query = (new ObjectQuery())
-            ->from($this->cities, 'city')
+        $query = (ObjectQuery::from($this->cities))
             ->selectMany('persons', 'person');
 
         $query->selectMany('children', 'child')
@@ -29,12 +28,11 @@ class SumTest extends AbstractQueryTest
 
     public function testSumOnNonNumericCollection(): void
     {
-        $query = new ObjectQuery();
         $foo = new class {
             public array $collection = [1, 2, 3, 'average'];
         };
 
-        $query->from([$foo]);
+        $query = ObjectQuery::from([$foo]);
 
         $this->expectException(IncompatibleCollectionException::class);
         $this->expectExceptionMessage('The given collection is incompatible with "sum" because of the following reason: Operation can only be applied to a collection of numerics.');
