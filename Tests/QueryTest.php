@@ -15,12 +15,13 @@ use ObjectQuery\Exception\InvalidAliasException;
 use ObjectQuery\ObjectQuery;
 use ObjectQuery\ObjectQueryContextEnvironment;
 use ObjectQuery\ObjectQueryOrder;
+use ObjectQuery\QueryContextInterface;
 
 class QueryTest extends AbstractQueryTest
 {
     public function testSimpleAlias(): void
     {
-        $query = ObjectQuery::from($this->cities, 'city')
+        $query = ObjectQuery::from($this->cities, alias: 'city')
             ->selectMany('persons', 'person')
             ->where(fn($person, ObjectQueryContextEnvironment $context) => $context->get('city')->name === 'Lyon');
 
@@ -29,7 +30,7 @@ class QueryTest extends AbstractQueryTest
 
     public function testWrongAlias(): void
     {
-        $query = ObjectQuery::from($this->cities, 'element')
+        $query = ObjectQuery::from($this->cities, alias: 'element')
             ->selectMany('persons', 'person')
             ->where(fn($city, ObjectQueryContextEnvironment $context) => $context->get('city')->name === 'Lyon');
 
@@ -43,8 +44,14 @@ class QueryTest extends AbstractQueryTest
         $this->expectException(AliasAlreadyTakenInQueryContextException::class);
         $this->expectExceptionMessage('Alias "__" is already taken in the query. You should choose another name for your alias.');
 
-        $query = ObjectQuery::from($this->cities, '__');
+        $query = ObjectQuery::from($this->cities, alias: '__');
         $query->selectMany('persons', '__');
+    }
+
+    public function testBadContextClass(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        ObjectQuery::from($this->cities, new class implements QueryContextInterface {});
     }
 
     public function testFromScalarCollection(): void

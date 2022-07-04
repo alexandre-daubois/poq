@@ -22,15 +22,12 @@ interface QueryInterface
      * @param iterable $source
      *      The source to apply manipulations on.
      *
-     * @param string $alias
-     *      How the current source should be referenced in sub-queries and clauses.
-     *
      * @param QueryContextInterface|null $context
      *      The optional context that forward needed information to the Query for its execution.
      *
      * @return QueryInterface
      */
-    public static function from(iterable $source, string $alias, QueryContextInterface $context = null): QueryInterface;
+    public static function from(iterable $source, QueryContextInterface $context = null): QueryInterface;
 
     /**
      * Get the context of the current Query, possibly modified by the latter.
@@ -45,13 +42,6 @@ interface QueryInterface
      * @return iterable
      */
     public function getSource(): iterable;
-
-    /**
-     * Get the defined alias of the source that was passed to the `from()` method.
-     *
-     * @return string
-     */
-    public function getSourceAlias(): string;
 
     /**
      * Applies a modifier to the Query.

@@ -47,10 +47,10 @@ class ObjectQuery implements QueryInterface
         $this->context = $context;
     }
 
-    public static function from(iterable $source, string $alias = '_', QueryContextInterface $context = null): QueryInterface
+    public static function from(iterable $source, QueryContextInterface $context = null, string $alias = '_'): QueryInterface
     {
         if (null !== $context && !$context instanceof ObjectQueryContext) {
-            throw new \InvalidArgumentException('Context of class %s is not compatible with ObjectQuery.', $context::class);
+            throw new \InvalidArgumentException(\sprintf('Context of class %s is not compatible with ObjectQuery.', $context::class));
         }
 
         $context ??= new ObjectQueryContext();

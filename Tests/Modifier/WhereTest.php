@@ -33,7 +33,7 @@ class WhereTest extends AbstractQueryTest
 
     public function testWhereWithAncestorNode(): void
     {
-        $cityQuery = ObjectQuery::from($this->cities, 'city');
+        $cityQuery = ObjectQuery::from($this->cities, alias: 'city');
 
         $result = $cityQuery
             ->where(fn($city) => \str_contains($city->name, 'Lyon'))

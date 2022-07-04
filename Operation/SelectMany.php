@@ -51,8 +51,6 @@ final class SelectMany extends AbstractQueryOperation
             }
         }
 
-        var_dump($source);
-
-        return ObjectQuery::from($final, $this->alias, $context);
+        return ObjectQuery::from($final, $context, $this->alias);
     }
 }

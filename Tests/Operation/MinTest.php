@@ -26,7 +26,7 @@ class MinTest extends AbstractQueryTest
     public function testMinWithoutResult(): void
     {
         $query = (ObjectQuery::from($this->cities))
-            ->from($this->cities, 'city')
+            ->from($this->cities, alias: 'city')
             ->selectMany('persons', 'person')
             ->selectMany('children', 'child')
                 ->where(fn($child) => $child->age < 0);
