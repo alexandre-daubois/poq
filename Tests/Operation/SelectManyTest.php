@@ -17,9 +17,8 @@ class SelectManyTest extends AbstractQueryTest
 {
     public function testSelectMany(): void
     {
-        $cityQuery = new ObjectQuery();
+        $cityQuery = ObjectQuery::from($this->cities);
         $result = $cityQuery
-            ->from($this->cities)
             ->where(fn($city) => $city->name === 'Lyon')
             ->selectMany('persons', '__')
             ->where(fn($person) => $person->height > 180)
@@ -31,7 +30,7 @@ class SelectManyTest extends AbstractQueryTest
 
     public function testSelectManyOnScalarField(): void
     {
-        $cityQuery = new ObjectQuery();
+        $cityQuery = ObjectQuery::from($this->cities);
 
         $this->expectException(IncompatibleFieldException::class);
         $this->expectExceptionMessage('The given field is incompatible with "selectMany" because of the following reason: You can only selectMany on fields that are collections of objects.');

@@ -10,8 +10,9 @@
 namespace ObjectQuery\Modifier;
 
 use ObjectQuery\ObjectQuery;
+use ObjectQuery\QueryModifierInterface;
 
-abstract class AbstractModifier implements ModifierInterface
+abstract class AbstractQueryModifier implements QueryModifierInterface
 {
     protected readonly ObjectQuery $parentQuery;
 

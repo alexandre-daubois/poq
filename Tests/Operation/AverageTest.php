@@ -17,9 +17,9 @@ class AverageTest extends AbstractQueryTest
 {
     public function testAverage(): void
     {
-        $query = (new ObjectQuery())
-            ->from($this->cities, 'city')
-            ->selectMany('persons', 'person');
+        $query = ObjectQuery::from($this->cities);
+
+        $query->selectMany('persons', 'person');
 
         $query->selectMany('children', 'child')
             ->where(fn($child) => $child->age > 20);
@@ -29,12 +29,11 @@ class AverageTest extends AbstractQueryTest
 
     public function testAverageOnNonNumericCollection(): void
     {
-        $query = new ObjectQuery();
         $foo = new class {
             public array $collection = [1, 2, 3, 'average'];
         };
 
-        $query->from([$foo]);
+        $query = ObjectQuery::from([$foo]);
 
         $this->expectException(IncompatibleCollectionException::class);
         $this->expectExceptionMessage('The given collection is incompatible with "average" because of the following reason: Operation can only be applied to a collection of numerics.');

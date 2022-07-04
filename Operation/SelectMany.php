@@ -11,10 +11,10 @@ namespace ObjectQuery\Operation;
 
 use ObjectQuery\Exception\IncompatibleFieldException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-final class SelectMany extends AbstractOperation
+final class SelectMany extends AbstractQueryOperation
 {
     private readonly string $field;
     private readonly string $alias;
@@ -28,9 +28,9 @@ final class SelectMany extends AbstractOperation
         $this->alias = $alias;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): ObjectQuery
+    public function apply(QueryInterface $query): ObjectQuery
     {
-        $source = $this->applySelect($source, $context);
+        $source = $this->applySelect($query);
 
         $final = [];
         $context = $this->parentQuery->getContext();
@@ -51,7 +51,8 @@ final class SelectMany extends AbstractOperation
             }
         }
 
-        return (new ObjectQuery($context))
-            ->from($final, $this->alias);
+        var_dump($source);
+
+        return ObjectQuery::from($final, $this->alias, $context);
     }
 }

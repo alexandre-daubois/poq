@@ -18,9 +18,8 @@ class LimitTest extends AbstractQueryTest
 {
     public function testLimit(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->limit(1)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query->limit(1)
             ->select();
 
         $this->assertCount(1, $result);
@@ -28,9 +27,8 @@ class LimitTest extends AbstractQueryTest
 
     public function testNullLimit(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
-            ->limit(null)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query->limit(null)
             ->select();
 
         $this->assertCount(\count($this->cities), $result);
@@ -38,7 +36,7 @@ class LimitTest extends AbstractQueryTest
 
     public function testNegativeLimit(): void
     {
-        $query = new ObjectQuery();
+        $query = ObjectQuery::from($this->cities);
 
         $this->expectException(InvalidModifierConfigurationException::class);
         $this->expectExceptionMessage('The limit must be a positive integer or null to set no limit.');
@@ -49,9 +47,9 @@ class LimitTest extends AbstractQueryTest
 
     public function testLimitWithObjects(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities)
-            ->orderBy(ObjectQueryOrder::Descending, 'minimalAge')
+        $query = ObjectQuery::from($this->cities);
+
+        $query->orderBy(ObjectQueryOrder::Descending, 'minimalAge')
             ->limit(1);
 
         $result = $query->select();

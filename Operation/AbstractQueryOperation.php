@@ -10,11 +10,12 @@
 namespace ObjectQuery\Operation;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
+use ObjectQuery\QueryOperationInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-abstract class AbstractOperation implements OperationInterface
+abstract class AbstractQueryOperation implements QueryOperationInterface
 {
     protected readonly array|string|null $fields;
     protected ObjectQuery $parentQuery;
@@ -27,24 +28,25 @@ abstract class AbstractOperation implements OperationInterface
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    protected function applySelect(array $source, ObjectQueryContext $context): array
+    protected function applySelect(QueryInterface $query): iterable
     {
-        if ($where = $this->parentQuery->getWhere()) {
-            $source = $where->apply($source, $context);
+        if ($where = $query->getWhere()) {
+            $query->applyModifier($where);
         }
 
-        if ($orderBy = $this->parentQuery->getOrderBy()) {
-            $source = $orderBy->apply($source, $context);
+        if ($offset = $query->getOffset()) {
+            $query->applyModifier($offset);
         }
 
-        if ($offset = $this->parentQuery->getOffset()) {
-            $source = $offset->apply($source, $context);
+        if ($limit = $query->getLimit()) {
+            $query->applyModifier($limit);
         }
 
-        if ($limit = $this->parentQuery->getLimit()) {
-            $source = $limit->apply($source, $context);
+        if ($orderBy = $query->getOrderBy()) {
+            $query->applyModifier($orderBy);
         }
 
+        $source = $query->getSource();
         if (null !== $this->fields) {
             $filteredResult = [];
 
@@ -56,7 +58,6 @@ abstract class AbstractOperation implements OperationInterface
                     foreach ($this->fields as $field) {
                         $fieldsValues[$field] = $this->propertyAccessor->getValue($item, $field);
                     }
-
                 }
 
                 $filteredResult[] = $fieldsValues;

@@ -11,9 +11,9 @@ namespace ObjectQuery\Modifier;
 
 use ObjectQuery\Exception\InvalidModifierConfigurationException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Limit extends AbstractModifier
+final class Limit extends AbstractQueryModifier
 {
     private readonly ?int $limit;
 
@@ -24,16 +24,16 @@ final class Limit extends AbstractModifier
         $this->limit = $limit;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): iterable
     {
         if (null === $this->limit) {
-            return $source;
+            return $query->getSource();
         }
 
         if ($this->limit <= 0) {
             throw new InvalidModifierConfigurationException('limit', 'The limit must be a positive integer or null to set no limit');
         }
 
-        return \array_slice($source, 0, $this->limit);
+        return \array_slice((array) $query->getSource(), 0, $this->limit);
     }
 }

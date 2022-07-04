@@ -16,9 +16,8 @@ class CountTest extends AbstractQueryTest
 {
     public function testCount(): void
     {
-        $query = new ObjectQuery();
+        $query = ObjectQuery::from($this->cities);
         $query
-            ->from($this->cities, 'city')
             ->selectMany('persons', 'person')
             ->selectMany('children', 'child')
         ;

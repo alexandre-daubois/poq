@@ -11,12 +11,12 @@ namespace ObjectQuery\Modifier;
 
 use ObjectQuery\Exception\InvalidModifierConfigurationException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
 use ObjectQuery\ObjectQueryOrder;
+use ObjectQuery\QueryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-final class OrderBy extends AbstractModifier
+final class OrderBy extends AbstractQueryModifier
 {
     private readonly ObjectQueryOrder $orderBy;
     private readonly ?string $orderField;
@@ -32,11 +32,13 @@ final class OrderBy extends AbstractModifier
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): iterable
     {
         if (null !== $this->orderField && ObjectQueryOrder::Shuffle === $this->orderBy) {
             throw new InvalidModifierConfigurationException('orderBy', 'An order field must not be provided when shuffling a collection');
         }
+
+        $source = (array) $query->getSource();
 
         if (ObjectQueryOrder::Shuffle === $this->orderBy) {
             \shuffle($source);

@@ -17,8 +17,8 @@ class SelectOneTest extends AbstractQueryTest
 {
     public function testObjectsSelectOne(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query
             ->where(fn($city) => $city->name === 'Lyon')
             ->selectOne();
 
@@ -28,8 +28,8 @@ class SelectOneTest extends AbstractQueryTest
 
     public function testObjectsSelectOneWithoutResult(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query
             ->where(fn($city) => $city->name === 'Invalid City')
             ->selectOne();
 
@@ -38,8 +38,8 @@ class SelectOneTest extends AbstractQueryTest
 
     public function testSelectOneWithField(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query
             ->where(fn($city) => $city->name === 'Lyon')
             ->selectOne('name');
 
@@ -49,8 +49,8 @@ class SelectOneTest extends AbstractQueryTest
 
     public function testSelectOneWithFieldWithoutResult(): void
     {
-        $query = new ObjectQuery();
-        $result = $query->from($this->cities)
+        $query = ObjectQuery::from($this->cities);
+        $result = $query
             ->where(fn($city) => $city->name === 'Rouen')
             ->selectOne('name');
 

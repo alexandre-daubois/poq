@@ -16,9 +16,9 @@ class ConcatTest extends AbstractQueryTest
 {
     public function testConcat(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities)
-            ->selectMany('persons', 'p')
+        $query = ObjectQuery::from($this->cities);
+
+        $query->selectMany('persons', 'p')
             ->selectMany('children', 'c');
 
         $this->assertSame('Hubert, Alex, Will, Fabien, Nicolas, Salah, Bob', $query->concat(', ', 'name'));

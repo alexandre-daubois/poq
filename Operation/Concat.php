@@ -10,9 +10,9 @@
 namespace ObjectQuery\Operation;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Concat extends AbstractOperation
+final class Concat extends AbstractQueryOperation
 {
     private readonly string $separator;
 
@@ -23,9 +23,9 @@ final class Concat extends AbstractOperation
         $this->separator = $separator;
     }
 
-    public function apply(array $source, ObjectQueryContext $context): string
+    public function apply(QueryInterface $query): string
     {
-        $source = $this->applySelect($source, $context);
+        $source = (array) $this->applySelect($query);
 
         $string = '';
         foreach ($source as $key => $value) {

@@ -9,12 +9,12 @@
 
 namespace ObjectQuery\Operation;
 
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Count extends AbstractOperation
+final class Count extends AbstractQueryOperation
 {
-    public function apply(array $source, ObjectQueryContext $context): int
+    public function apply(QueryInterface $query): int
     {
-        return \count($this->applySelect($source, $context));
+        return \count((array) $this->applySelect($query));
     }
 }

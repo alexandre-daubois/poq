@@ -10,9 +10,9 @@
 namespace ObjectQuery\Operation;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Each extends AbstractOperation
+final class Each extends AbstractQueryOperation
 {
     private \Closure $callback;
 
@@ -23,8 +23,8 @@ final class Each extends AbstractOperation
         $this->callback = $callback(...);
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): array
     {
-        return \array_map($this->callback, $this->applySelect($source, $context));
+        return \array_map($this->callback, (array) $this->applySelect($query));
     }
 }

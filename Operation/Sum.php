@@ -11,18 +11,18 @@ namespace ObjectQuery\Operation;
 
 use ObjectQuery\Exception\IncompatibleCollectionException;
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Sum extends AbstractOperation
+final class Sum extends AbstractQueryOperation
 {
     public function __construct(ObjectQuery $parentQuery, string $field)
     {
         parent::__construct($parentQuery, $field);
     }
 
-    public function apply(array $source, ObjectQueryContext $context): int|float
+    public function apply(QueryInterface $query): int|float
     {
-        $source = $this->applySelect($source, $context);
+        $source = (array) $this->applySelect($query);
 
         if (\count($source) !== \count(\array_filter($source, 'is_numeric'))) {
             throw new IncompatibleCollectionException('sum', 'Operation can only be applied to a collection of numerics');

@@ -10,10 +10,10 @@
 namespace ObjectQuery\Modifier;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
 use ObjectQuery\ObjectQueryContextEnvironment;
+use ObjectQuery\QueryInterface;
 
-final class Where extends AbstractModifier
+final class Where extends AbstractQueryModifier
 {
     private readonly \Closure $callback;
 
@@ -24,11 +24,11 @@ final class Where extends AbstractModifier
         $this->callback = $callback(...)->bindTo(null);
     }
 
-    public function apply(array $source, ObjectQueryContext $context): array
+    public function apply(QueryInterface $query): array
     {
         $final = [];
-        foreach ($source as $item) {
-            $localContext = $context
+        foreach ($query->getSource() as $item) {
+            $localContext = $query->getContext()
                 ->withEnvironment($item, [$this->parentQuery->getSourceAlias() => $item])
                 ->getEnvironment($item);
 

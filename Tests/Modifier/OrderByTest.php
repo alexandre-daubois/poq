@@ -18,9 +18,9 @@ class OrderByTest extends AbstractQueryTest
 {
     public function testObjectsAscendingOrderBy(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities)
-            ->orderBy(ObjectQueryOrder::Ascending, 'minimalAge');
+        $query = ObjectQuery::from($this->cities);
+
+        $query->orderBy(ObjectQueryOrder::Ascending, 'minimalAge');
 
         $result = $query->select();
         $this->assertSame('Paris', $result[0]->name);
@@ -29,9 +29,8 @@ class OrderByTest extends AbstractQueryTest
 
     public function testObjectsDescendingOrderBy(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities)
-            ->orderBy(ObjectQueryOrder::Descending, 'minimalAge');
+        $query = ObjectQuery::from($this->cities);
+        $query->orderBy(ObjectQueryOrder::Descending, 'minimalAge');
 
         $result = $query->select();
         $this->assertSame('Lyon', $result[0]->name);
@@ -40,9 +39,8 @@ class OrderByTest extends AbstractQueryTest
 
     public function testObjectsShuffleWithOrderFieldFailure(): void
     {
-        $query = new ObjectQuery();
-        $query->from($this->cities)
-            ->orderBy(ObjectQueryOrder::Shuffle, 'minimalAge');
+        $query = ObjectQuery::from($this->cities);
+        $query->orderBy(ObjectQueryOrder::Shuffle, 'minimalAge');
 
         $this->expectException(InvalidModifierConfigurationException::class);
         $this->expectExceptionMessage('The modifier "orderBy" is wrongly configured: An order field must not be provided when shuffling a collection.');
@@ -51,9 +49,9 @@ class OrderByTest extends AbstractQueryTest
 
     public function testObjectsShuffle(): void
     {
-        $query = (new ObjectQuery())
-            ->from($this->cities, 'city')
-            ->selectMany('persons', 'person')
+        $query = ObjectQuery::from($this->cities);
+
+        $query->selectMany('persons', 'person')
             ->selectMany('children', 'child')
             ->orderBy(ObjectQueryOrder::Shuffle);
 

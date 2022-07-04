@@ -10,18 +10,18 @@
 namespace ObjectQuery\Operation;
 
 use ObjectQuery\ObjectQuery;
-use ObjectQuery\ObjectQueryContext;
+use ObjectQuery\QueryInterface;
 
-final class Max extends AbstractOperation
+final class Max extends AbstractQueryOperation
 {
     public function __construct(ObjectQuery $parentQuery, string $field)
     {
         parent::__construct($parentQuery, $field);
     }
 
-    public function apply(array $source, ObjectQueryContext $context): mixed
+    public function apply(QueryInterface $query): mixed
     {
-        $source = $this->applySelect($source, $context);
+        $source = (array) $this->applySelect($query);
 
         return empty($source) ? null : \max($source);
     }

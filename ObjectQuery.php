@@ -10,7 +10,6 @@
 namespace ObjectQuery;
 
 use ObjectQuery\Exception\AliasAlreadyTakenInQueryContextException;
-use ObjectQuery\Exception\AlreadyRegisteredWhereFunctionException;
 use ObjectQuery\Exception\IncompatibleCollectionException;
 use ObjectQuery\Modifier\Limit;
 use ObjectQuery\Modifier\Offset;
@@ -27,9 +26,9 @@ use ObjectQuery\Operation\SelectMany;
 use ObjectQuery\Operation\SelectOne;
 use ObjectQuery\Operation\Sum;
 
-class ObjectQuery
+class ObjectQuery implements QueryInterface
 {
-    private array $source;
+    private iterable $source;
     private string $sourceAlias;
 
     private ?Where $where = null;
@@ -41,31 +40,32 @@ class ObjectQuery
 
     private ?ObjectQuery $subQuery = null;
 
-    private static array $registeredWhereFunctions = [];
-    private static array $registeredWhereFunctionNames = [];
-
-    public function __construct(ObjectQueryContext $context = null)
+    private function __construct(iterable $source, string $alias = '_', ObjectQueryContext $context = null)
     {
-        $this->context = $context ?? new ObjectQueryContext();
+        $this->source = $source;
+        $this->sourceAlias = $alias;
+        $this->context = $context;
     }
 
-    public function from(array $source, string $alias = '_'): ObjectQuery
+    public static function from(iterable $source, string $alias = '_', QueryContextInterface $context = null): QueryInterface
     {
-        if ($this->context->isUsedAlias($alias)) {
+        if (null !== $context && !$context instanceof ObjectQueryContext) {
+            throw new \InvalidArgumentException('Context of class %s is not compatible with ObjectQuery.', $context::class);
+        }
+
+        $context ??= new ObjectQueryContext();
+
+        if ($context->isUsedAlias($alias)) {
             throw new AliasAlreadyTakenInQueryContextException($alias);
         }
 
-        $this->source = $source;
-        $this->sourceAlias = $alias;
-        $this->context = $this->context->withUsedAlias($alias);
-
-        $countObjects = \count(\array_filter($source, 'is_object'));
-
-        if (\count($source) !== $countObjects) {
-            throw new IncompatibleCollectionException('from', 'Mixed and scalar collections are not supported. Collection must only contain objects to be used by ObjectQuery');
+        foreach ($source as $item) {
+            if (!\is_object($item)) {
+                throw new IncompatibleCollectionException('from', 'Mixed and scalar collections are not supported. Collection must only contain objects to be used by ObjectQuery');
+            }
         }
 
-        return $this;
+        return new ObjectQuery($source, $alias, $context->withUsedAlias($alias));
     }
 
     public function where(callable $callback): ObjectQuery
@@ -121,54 +121,54 @@ class ObjectQuery
         }
 
         $this->subQuery = (new SelectMany($this, $field, $alias))
-            ->apply($this->source, $this->context);
+            ->apply($this);
 
         return $this;
     }
 
     public function select(array|string|null $fields = null): array
     {
-        return $this->applyOperation(Select::class, [$fields]);
+        return $this->applyOperation(new Select($this, $fields));
     }
 
     public function selectOne(string|null $fields = null): mixed
     {
-        return $this->applyOperation(SelectOne::class, [$fields]);
+        return $this->applyOperation(new SelectOne($this, $fields));
     }
 
     public function count(): int
     {
-        return $this->applyOperation(Count::class);
+        return $this->applyOperation(new Count($this));
     }
 
     public function concat(string $separator = ' ', ?string $field = null): string
     {
-        return $this->applyOperation(Concat::class, [$field, $separator]);
+        return $this->applyOperation(new Concat($this, $field, $separator));
     }
 
     public function each(callable $callback): array
     {
-        return $this->applyOperation(Each::class, [$callback]);
+        return $this->applyOperation(new Each($this, $callback));
     }
 
     public function max(?string $field = null): mixed
     {
-        return $this->applyOperation(Max::class, [$field]);
+        return $this->applyOperation(new Max($this, $field));
     }
 
     public function min(?string $field = null): mixed
     {
-        return $this->applyOperation(Min::class, [$field]);
+        return $this->applyOperation(new Min($this, $field));
     }
 
     public function average(?string $field = null): float
     {
-        return $this->applyOperation(Average::class, [$field]);
+        return $this->applyOperation(new Average($this, $field));
     }
 
     public function sum(?string $field = null): int|float
     {
-        return $this->applyOperation(Sum::class, [$field]);
+        return $this->applyOperation(new Sum($this, $field));
     }
 
     public function getSourceAlias(): string
@@ -201,28 +201,28 @@ class ObjectQuery
         return $this->context;
     }
 
-    public static function registerWhereFunction(ExpressionFunction $expressionFunction): void
+    public function getSource(): iterable
     {
-        if (\in_array($expressionFunction->getName(), self::$registeredWhereFunctionNames, true)) {
-            throw new AlreadyRegisteredWhereFunctionException($expressionFunction->getName());
-        }
-
-        self::$registeredWhereFunctions[] = $expressionFunction;
-        self::$registeredWhereFunctionNames[] = $expressionFunction->getName();
+        return $this->source;
     }
 
-    public static function getRegisteredWhereFunctions(): array
-    {
-        return self::$registeredWhereFunctions;
-    }
-
-    private function applyOperation(string $operationClass, array $args = []): mixed
+    public function applyOperation(QueryOperationInterface $operation): mixed
     {
         if ($this->subQuery) {
-            return $this->subQuery->applyOperation($operationClass, $args);
+            return $this->subQuery->applyOperation($operation);
         }
 
-        return (new $operationClass($this, ...$args))
-            ->apply($this->source, $this->context);
+        return $operation->apply($this);
+    }
+
+    public function applyModifier(QueryModifierInterface $modifier): QueryInterface
+    {
+        if ($this->subQuery) {
+            return $this->subQuery->applyModifier($modifier);
+        }
+
+        $this->source = $modifier->apply($this);
+
+        return $this;
     }
 }
