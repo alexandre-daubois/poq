@@ -8,7 +8,7 @@
 ## Install
 
 ```bash
-composer require alexandre-daubois/poq 1.0.0-beta
+composer require alexandre-daubois/poq 1.0.0-beta2
 ```
 
 That's it, ready to go! 🎉
@@ -49,13 +49,12 @@ $cities = [
 
 The `ObjectQuery` object allows you to easily fetch deep information in your collections with ease. Just like Doctrine's `QueryBuilder`, plenty of utils methods are present for easy manipulation.
 
-Moreover, you're able to create your query step-by-step and conditionally if needed. To create a simple query, all you need is create a new instance of the `ObjectQuery` object and pass your collection as its source, thanks to the `from` method:
+Moreover, you're able to create your query step-by-step and conditionally if needed. To create a simple query, all you need to do is call `ObjectQuery`'s `from` factory, and pass your collection as its source:
 
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities, 'city');
 ```
 
 From here, you're able to manipulate your collections and fetch data. First, let's see how to filter your collections. Note that the `city` argument is optional and defines an alias for the current collection. By default, the alias is `_`. Each alias must be unique in the query, meaning it is mandatory you pass an alias if you are dealing with deep collections. Defining an alias allows you to reference to the object later in the query. See the `selectMany` operation explanation for more details.
@@ -75,8 +74,7 @@ Modifiers allow to filter results, order them, limit them and so on.
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities, 'city'))
     ->where(
         function(City $city) {
             return \str_contains($city->name, 'Lyon') || \in_array($city->name, ['Paris', 'Rouen']);
@@ -92,8 +90,7 @@ $query = (new ObjectQuery())
 use ObjectQuery\ObjectQuery;
 use ObjectQuery\ObjectQueryOrder;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities))
     ->orderBy(ObjectQueryOrder::Ascending, 'name');
 ```
 
@@ -104,8 +101,7 @@ $query = (new ObjectQuery())
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 // Skip the 2 first cities of the collection and fetch the rest
 $query->offset(2)
@@ -123,8 +119,7 @@ The `limit` modifier limit the number of results that will be used by different 
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 // Only the first 2 results will be fetched by the `select` operation
 $query->limit(2)
@@ -146,8 +141,7 @@ This is the most basic operation. It returns filtered data of the query. It is p
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 // Retrieve the whole object
 $query->select();
@@ -170,9 +164,8 @@ When querying a collection, and we know in advance that only one result is going
 ```php
 use ObjectQuery\Exception\NonUniqueResultException;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
-    ->where('city.name == "Lyon"');
+$query = (ObjectQuery::from($this->cities, 'city'))
+    ->where(fn($city) => $city->name === 'Lyon');
 
 try {
     $city = $query->selectOne(); // $city is an instance of City
@@ -194,8 +187,7 @@ Note that we defined an alias for city, **which allows to reference the parent c
 use ObjectQuery\ObjectQuery;
 use ObjectQuery\ObjectQueryContextEnvironment;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities, 'city'))
     ->where(fn($city) => \in_array($city->name, ['Paris', 'Rouen']))
     ->selectMany('persons', 'person')
         ->where(fn($person) => $person->height >= 180)
@@ -210,8 +202,7 @@ Like `from`, `selectMany` also takes an alias as an argument. This way, you will
 This operation returns the size of the current filtered collection:
 
 ```php
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 $query->count();
 ```
@@ -221,8 +212,7 @@ $query->count();
 This operation will concatenate the collection with a given separator. If you're dealing with a scalar collection, there is no mandatory argument. If dealing with collections of objects, the `field` argument must be passed.
 
 ```php
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 $query->concat(', ', 'name');
 ```
@@ -232,8 +222,7 @@ $query->concat(', ', 'name');
 This operation allows you to pass a callback, which will be applied to each element of the filtered collection. You can see this as a `foreach`.
 
 ```php
-$query = (new ObjectQuery())
-    ->from($cities, 'city');
+$query = ObjectQuery::from($this->cities);
 
 // Append an exclamation point to every city name
 $query->each(fn($element) => $element->name.' !');
@@ -246,8 +235,7 @@ These operations will return the maximum and the minimum of the collection. You 
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities))
         ->selectMany('persons', 'person')
             ->selectMany('children', 'child');
 
@@ -264,8 +252,7 @@ $query->max('name'); // "Will"
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities))
         ->selectMany('persons', 'person')
             ->selectMany('children', 'child');
 
@@ -279,8 +266,7 @@ $query->sum('age');
 ```php
 use ObjectQuery\ObjectQuery;
 
-$query = (new ObjectQuery())
-    ->from($cities, 'city')
+$query = (ObjectQuery::from($this->cities))
         ->selectMany('persons', 'person')
             ->selectMany('children', 'child');
 
